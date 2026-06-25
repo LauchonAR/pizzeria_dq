@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doble Queso - Pizzería</title>
+    <style>
+        /* --- ESTILOS CSS INTEGRADOS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff8f0; color: #333; }
+        
+        header { background: #d32f2f; color: white; text-align: center; padding: 1.5rem 1rem; border-bottom: 5px solid #fbc02d; }
+        .logo-container img { max-width: 100px; height: auto; margin-bottom: 8px; background: white; border-radius: 50%; padding: 4px; }
+        header h1 { font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; color: #fbc02d; text-shadow: 2px 2px 0px #000; margin-bottom: 5px; }
+        header p { font-size: 1rem; opacity: 0.9; }
+
+        main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        
+        .category-tabs { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; color: #666; transition: all 0.2s; }
+        .tab-btn.active { background: #d32f2f; color: white; box-shadow: 0 2px 5px rgba(211,47,47,0.3); }
+        
+        .menu h2 { margin-bottom: 1rem; color: #d32f2f; border-bottom: 2px solid #fbc02d; padding-bottom: 0.5rem; }
+        .pizza-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+        
+        .pizza-card { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.08); border: 1px solid #eee; display: flex; flex-direction: column; justify-content: space-between; }
+        .pizza-card h3 { color: #d32f2f; margin-bottom: 0.3rem; font-size: 1.1rem; line-height: 1.2; }
+        .pizza-card .desc { font-size: 0.8rem; color: #666; margin-bottom: 0.8rem; flex-grow: 1; }
+        .pizza-card .price { font-size: 1.2rem; font-weight: bold; color: #333; margin: 0.5rem 0; }
+        
+        .half-pizza-selector { margin: 0.5rem 0; padding: 0.5rem; background: #fafafa; border-radius: 5px; font-size: 0.85rem; }
+        .half-pizza-selector select { width: 100%; padding: 5px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        
+        .add-btn { width: 100%; padding: 0.6rem; background: #fbc02d; color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; margin-top: auto; }
+        .add-btn:hover { background: #f9a825; }
+
+        .cart-section { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: fit-content; position: sticky; top: 20px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        .cart-item button { background: #d32f2f; color: white; border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 8px; font-size: 0.8rem; }
+        .cart-item button:hover { background: #b71c1c; }
+
+        .delivery-options { margin: 1.5rem 0; background: #fafafa; padding: 1rem; border-radius: 8px; }
+        .toggle-container { display: flex; gap: 10px; margin-top: 10px; }
+        .delivery-btn { flex: 1; padding: 10px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; color: #777; font-size: 0.9rem; }
+        .delivery-btn.active { border-color: #d32f2f; background: #d32f2f; color: white; }
+
+        .cart-total { margin: 1.5rem 0; padding: 1rem; background: #fffde7; border-radius: 5px; font-size: 1.2rem; text-align: right; border: 1px solid #fbc02d; }
+        .customer-info input { width: 100%; padding: 0.7rem; margin-bottom: 0.7rem; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; text-transform: capitalize; }
+        .customer-info input[type="tel"] { text-transform: none; } /* El teléfono no se capitaliza */
+        
+        .whatsapp-btn { width: 100%; padding: 1rem; background: #25d366; color: white; border: none; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .whatsapp-btn:hover { background: #128c7e; }
+
+        @media (max-width: 768px) {
+            main { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8rem; }
+            .pizza-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .pizza-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo Doble Queso" onerror="this.style.display='none'">
+        </div>
+        <h1>DOBLE QUESO</h1>
+        <p>Pizza a la Piedra • Desde 1999 • Teléfono 4342018</p>
+    </header>
+
+    <main>
+        <section class="menu">
+            <div class="category-tabs">
+                <button id="tabPizzas" class="tab-btn active" onclick="setCategory('pizzas')">🍕 PIZZAS (20)</button>
+                <button id="tabCalzones" class="tab-btn" onclick="setCategory('calzones')">🥟 CALZONES (7)</button>
+            </div>
+            
+            <h2 id="menuTitle">Nuestro Menú de Pizzas</h2>
+            <div class="pizza-grid" id="pizzaGrid"></div>
+        </section>
+
+        <section class="cart-section">
+            <h2>🛒 Tu Pedido</h2>
+            <div id="cartItems"></div>
+            
+            <div class="delivery-options">
+                <h3 style="font-size:1rem; margin-bottom:0.5rem;">¿Cómo lo querés?</h3>
+                <div class="toggle-container">
+                    <button id="btnPickup" class="delivery-btn active" onclick="setDeliveryType('pickup')">🏠 Retiro</button>
+                    <button id="btnDelivery" class="delivery-btn" onclick="setDeliveryType('delivery')">Envío (+$1000)</button>
+                </div>
+            </div>
+
+            <div class="cart-total">
+                <span id="deliveryLabel" style="display:none; font-size: 0.85rem; color: #666;">Envío: $1.000</span><br>
+                <strong>Total: $<span><span id="totalAmount">0</span></span></strong>
+            </div>
+            
+            <div class="customer-info">
+                <h3 style="font-size:1rem; margin-bottom:0.5rem;">Tus Datos</h3>
+                <input type="text" id="customerName" placeholder="Nombre completo">
+                <div id="addressField" style="display: none;">
+                    <input type="text" id="customerAddress" placeholder="Dirección exacta">
+                </div>
+                <input type="tel" id="customerPhone" placeholder="Teléfono / WhatsApp">
+            </div>
+            
+            <button class="whatsapp-btn" onclick="sendToWhatsApp()">Enviar por WhatsApp</button>
+        </section>
+    </main>
+
+    <script>
+        // --- DATOS DEL MENÚ ---
+        const menuData = {
+            pizzas: [
+                { id: 1, name: "Muzzarella", desc: "Salsa de tomate, muzzarella, aceitunas, aceite de oliva", priceG: 15000, priceH: 7500 },
+                { id: 2, name: "Napolitana", desc: "Salsa de tomate, muzzarella, tomates naturales en rodajas", priceG: 17000, priceH: 8500 },
+                { id: 3, name: "Fugazzeta", desc: "Cebolla, muzzarella, orégano, aceite de oliva", priceG: 17000, priceH: 8500 },
+                { id: 4, name: "Especial Queso", desc: "Salsa de tomate, muzzarella, jamón cocido, aceitunas, morrón y huevo", priceG: 19000, priceH: 9500 },
+                { id: 5, name: "Roquefort", desc: "Salsa de tomate, muzzarella, roquefort, morrones", priceG: 19000, priceH: 9500 },
+                { id: 6, name: "Calabresa", desc: "Salsa de tomate, muzzarella, cantimpalo", priceG: 19000, priceH: 9500 },
+                { id: 7, name: "Anchoas", desc: "Salsa de tomate, muzzarella, anchoas", priceG: 22000, priceH: 11000 },
+                { id: 8, name: "4 Quesos", desc: "Salsa de tomate, muzzarella, roquefort, parmesano, provolone", priceG: 22000, priceH: 11000 },
+                { id: 9, name: "Provolone", desc: "Salsa de tomate, muzzarella, provolone, aceite de oliva, orégano", priceG: 19000, priceH: 9500 },
+                { id: 10, name: "Ternera", desc: "Salsa de tomate, muzzarella, huevo, tomates naturales, ternera, morrones, aceitunas", priceG: 22000, priceH: 11000 },
+                { id: 11, name: "Palmito", desc: "Muzzarella, salsa de tomate, palmito, salsa golf, morrones", priceG: 22000, priceH: 11000 },
+                { id: 12, name: "Ananá", desc: "Muzzarella, salsa de tomate, ananá, morrones", priceG: 19000, priceH: 9500 },
+                { id: 13, name: "Provenzal", desc: "Salsa de tomate, muzzarella, perejil y ajo", priceG: 17000, priceH: 8500 },
+                { id: 14, name: "Fug. Queso Doble", desc: "Muzzarella y cebolla", priceG: 19000, priceH: 9500 },
+                { id: 15, name: "Primavera", desc: "Salsa de tomate, muzzarella, tomates naturales, aceitunas, morrón, oliva y huevo", priceG: 19000, priceH: 9500 },
+                { id: 16, name: "S. Esp. c/ Anchoa", desc: "Salsa de tomate, muzzarella, anchoas, morrón, huevo y aceitunas", priceG: 22000, priceH: 11000 },
+                { id: 17, name: "Super Especial", desc: "Salsa de tomate, muzzarella, jamón cocido, tomates naturales, aceitunas, morrón, oliva y huevo", priceG: 19000, priceH: 9500 },
+                { id: 18, name: "Bondiola", desc: "Salsa de tomate, muzzarella, bondiola", priceG: 22000, priceH: 11000 },
+                { id: 19, name: "Muzz. y Morr.", desc: "Salsa de tomate, muzzarella y morrones picados", priceG: 17000, priceH: 8500 },
+                { id: 20, name: "Muzz. c/ Huevo", desc: "Salsa de tomate, muzzarella, oliva, orégano, aceitunas y huevo", priceG: 17000, priceH: 8500 }
+            ],
+            calzones: [
+                { id: 101, name: "Calabresa", desc: "Tomates naturales, muzzarella, cantimpalo, aceitunas", priceG: 21000, priceH: 10500 },
+                { id: 102, name: "Italiano", desc: "Muzzarella, jamón cocido, tomates naturales, aceitunas, morrón y huevo", priceG: 21000, priceH: 10500 },
+                { id: 103, name: "Especial", desc: "Muzzarella, jamón cocido", priceG: 21000, priceH: 10500 },
+                { id: 104, name: "Ternera", desc: "Muzzarella, ternera, tomates naturales, huevo y morrón", priceG: 23000, priceH: 11500 },
+                { id: 105, name: "4 Quesos", desc: "Salsa de tomate, muzzarella, roquefort, parmesano y provolone", priceG: 23000, priceH: 11500 },
+                { id: 106, name: "Palmito", desc: "Muzzarella, jamón cocido, palmito, salsa golf, morrones", priceG: 23000, priceH: 11500 },
+                { id: 107, name: "Atún", desc: "Muzzarella, atún, aceitunas, tomates naturales, morrón y huevo revuelto", priceG: 23000, priceH: 11500 }
+            ]
+        };
+
+        let cart = [];
+        let currentCategory = 'pizzas';
+        let deliveryType = 'pickup';
+        const DELIVERY_COST = 1000;
+        const WHATSAPP_NUMBER = "5493815135938";
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('tabPizzas').className = cat === 'pizzas' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tabCalzones').className = cat === 'calzones' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('menuTitle').textContent = cat === 'pizzas' ? 'Nuestro Menú de Pizzas' : 'Nuestro Menú de Calzones';
+            renderMenu();
+        }
+
+        function renderMenu() {
+            const items = menuData[currentCategory];
+            const grid = document.getElementById('pizzaGrid');
+            
+            grid.innerHTML = items.map(item => `
+                <div class="pizza-card">
+                    <div>
+                        <h3>${item.name}</h3>
+                        <p class="desc">${item.desc}</p>
+                        
+                        <div class="half-pizza-selector" id="selector-${item.id}">
+                            <select onchange="updatePriceDisplay(${item.id}, this.value)" id="size-${item.id}">
+                                <option value="full">Entera ($${item.priceG.toLocaleString()})</option>
+                                <option value="half">1/2 y 1/2 (Combinar)</option>
+                            </select>
+                            
+                            <select id="flavor2-${item.id}" style="display:none;" onchange="updateHalfPrice(${item.id})">
+                                <option value="">Seleccioná el 2do sabor...</option>
+                                <option value="solo_media">⚡ Solo Media Pizza (${item.name})</option>
+                                ${items.filter(i => i.id !== item.id).map(i => 
+                                    `<option value="${i.id}" data-price="${i.priceG}">${i.name}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="price" id="price-${item.id}">$${item.priceG.toLocaleString()}</div>
+                    <button class="add-btn" onclick="addToCart(${item.id})">Agregar +</button>
+                </div>
+            `).join('');
+        }
+
+        function updatePriceDisplay(id, size) {
+            const item = menuData[currentCategory].find(i => i.id === id);
+            const flavor2Select = document.getElementById(`flavor2-${id}`);
+            const priceDisplay = document.getElementById(`price-${id}`);
+            
+            if (size === 'half') {
+                flavor2Select.style.display = 'block';
+                priceDisplay.textContent = `$${item.priceG.toLocaleString()}`; 
+            } else {
+                flavor2Select.style.display = 'none';
+                flavor2Select.value = "";
+                priceDisplay.textContent = `$${item.priceG.toLocaleString()}`;
+            }
+        }
+
+        function updateHalfPrice(id) {
+            const item = menuData[currentCategory].find(i => i.id === id);
+            const flavor2Id = document.getElementById(`flavor2-${id}`).value;
+            const priceDisplay = document.getElementById(`price-${id}`);
+            
+            if (!flavor2Id) {
+                priceDisplay.textContent = `$${item.priceG.toLocaleString()}`;
+                return;
+            }
+            
+            // LÓGICA PARA "SOLO MEDIA PIZZA"
+            if (flavor2Id === 'solo_media') {
+                priceDisplay.textContent = `$${item.priceH.toLocaleString()}`;
+                return;
+            }
+            
+            // LÓGICA PARA 1/2 Y 1/2 NORMAL
+            const item2 = menuData[currentCategory].find(i => i.id == flavor2Id);
+            const avgPrice = Math.round((item.priceG + item2.priceG) / 2);
+            priceDisplay.textContent = `$${avgPrice.toLocaleString()}`;
+        }
+
+        function addToCart(id) {
+            const item = menuData[currentCategory].find(i => i.id === id);
+            const sizeSelect = document.getElementById(`size-${id}`);
+            const isHalf = sizeSelect.value === 'half';
+            const flavor2Id = document.getElementById(`flavor2-${id}`).value;
+            
+            let finalPrice = item.priceG;
+            let displayName = item.name;
+            
+            if (isHalf) {
+                if (!flavor2Id) return alert('Seleccioná el segundo sabor o "Solo Media"');
+                
+                // CASO: SOLO MEDIA PIZZA
+                if (flavor2Id === 'solo_media') {
+                    finalPrice = item.priceH;
+                    displayName = `1/2 ${item.name} (Solo Mitad)`;
+                } 
+                // CASO: 1/2 Y 1/2 NORMAL
+                else {
+                    const item2 = menuData[currentCategory].find(i => i.id == flavor2Id);
+                    finalPrice = Math.round((item.priceG + item2.priceG) / 2);
+                    displayName = `1/2 ${item.name} - 1/2 ${item2.name}`;
+                }
+            }
+
+            cart.push({
+                id: Date.now() + Math.random(),
+                displayName: displayName,
+                price: finalPrice,
+                quantity: 1,
+                isHalf: isHalf
+            });
+            
+            updateCart();
+            
+            // Resetear selectores
+            sizeSelect.value = 'full';
+            document.getElementById(`flavor2-${id}`).style.display = 'none';
+            document.getElementById(`flavor2-${id}`).value = '';
+            document.getElementById(`price-${id}`).textContent = `$${item.priceG.toLocaleString()}`;
+        }
+
+        function removeFromCart(cartId) {
+            cart = cart.filter(i => i.id !== cartId);
+            updateCart();
+        }
+
+        function updateCart() {
+            const container = document.getElementById('cartItems');
+            const totalSpan = document.getElementById('totalAmount');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="color:#999; text-align:center; padding:1rem;">Carrito vacío </p>';
+                totalSpan.textContent = '0';
+                return;
+            }
+            
+            container.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div>
+                        <strong>${index + 1}. ${item.displayName}</strong><br>
+                        <small>$${item.price.toLocaleString()}</small>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})">❌</button>
+                </div>
+            `).join('');
+            
+            let subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            let finalTotal = subtotal + (deliveryType === 'delivery' ? DELIVERY_COST : 0);
+            totalSpan.textContent = finalTotal.toLocaleString();
+        }
+
+        function setDeliveryType(type) {
+            deliveryType = type;
+            document.getElementById('btnPickup').className = type === 'pickup' ? 'delivery-btn active' : 'delivery-btn';
+            document.getElementById('btnDelivery').className = type === 'delivery' ? 'delivery-btn active' : 'delivery-btn';
+            
+            const addrField = document.getElementById('addressField');
+            const addrInput = document.getElementById('customerAddress');
+            
+            if (type === 'delivery') {
+                addrField.style.display = 'block';
+                addrInput.required = true;
+                document.getElementById('deliveryLabel').style.display = 'block';
+            } else {
+                addrField.style.display = 'none';
+                addrInput.required = false;
+                addrInput.value = '';
+                document.getElementById('deliveryLabel').style.display = 'none';
+            }
+            updateCart();
+        }
+
+        function sendToWhatsApp() {
+            if (cart.length === 0) return alert('¡Agregá al menos un producto!');
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+            
+            if (!name) return alert('Ingresa tu nombre');
+            if (!phone) return alert('Ingresa tu teléfono');
+            if (deliveryType === 'delivery' && !address) return alert('Falta la dirección');
+            
+            let msg = `🍕 *PEDIDO DOBLE QUESO*\n\n👤 ${name}\n📞 ${phone}\n🚚 ${deliveryType === 'delivery' ? 'Envío' : 'Retiro'}\n`;
+            if (deliveryType === 'delivery') msg += `📍 ${address}\n💸 Envío: $${DELIVERY_COST}\n`;
+            
+            msg += `\n📦 *Detalle:*\n`;
+            cart.forEach((item, idx) => {
+                msg += `${idx + 1}. ${item.displayName} - $${item.price.toLocaleString()}\n`;
+            });
+            
+            let total = cart.reduce((s, i) => s + i.price, 0);
+            if (deliveryType === 'delivery') total += DELIVERY_COST;
+            msg += `\n💰 *TOTAL: $${total.toLocaleString()}*`;
+            
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        renderMenu();
+        updateCart();
+    </script>
+</body>
+</html>
