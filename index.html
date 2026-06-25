@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doble Queso - Pizzería</title>
+
+    <!-- Open Graph para WhatsApp y redes sociales -->
+    <meta property="og:title" content="Doble Queso - Pizza a la Piedra" />
+    <meta property="og:description" content="🍕 Pizza a la Piedra • Desde 1999 • Pedí por acá!" />
+    <meta property="og:image" content="https://lauchonar.github.io/pizzeria_dq/logo.PNG" />
+    <meta property="og:url" content="https://lauchonar.github.io/pizzeria_dq/" />
+    <meta property="og:type" content="website" />
+
     <style>
         /* --- ESTILOS CSS INTEGRADOS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,7 +54,7 @@
 
         .cart-total { margin: 1.5rem 0; padding: 1rem; background: #fffde7; border-radius: 5px; font-size: 1.2rem; text-align: right; border: 1px solid #fbc02d; }
         .customer-info input { width: 100%; padding: 0.7rem; margin-bottom: 0.7rem; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; text-transform: capitalize; }
-        .customer-info input[type="tel"] { text-transform: none; } /* El teléfono no se capitaliza */
+        .customer-info input[type="tel"] { text-transform: none; }
         
         .whatsapp-btn { width: 100%; padding: 1rem; background: #25d366; color: white; border: none; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .whatsapp-btn:hover { background: #128c7e; }
@@ -112,7 +120,6 @@
     </main>
 
     <script>
-        // --- DATOS DEL MENÚ ---
         const menuData = {
             pizzas: [
                 { id: 1, name: "Muzzarella", desc: "Salsa de tomate, muzzarella, aceitunas, aceite de oliva", priceG: 15000, priceH: 7500 },
@@ -218,13 +225,11 @@
                 return;
             }
             
-            // LÓGICA PARA "SOLO MEDIA PIZZA"
             if (flavor2Id === 'solo_media') {
                 priceDisplay.textContent = `$${item.priceH.toLocaleString()}`;
                 return;
             }
             
-            // LÓGICA PARA 1/2 Y 1/2 NORMAL
             const item2 = menuData[currentCategory].find(i => i.id == flavor2Id);
             const avgPrice = Math.round((item.priceG + item2.priceG) / 2);
             priceDisplay.textContent = `$${avgPrice.toLocaleString()}`;
@@ -242,13 +247,10 @@
             if (isHalf) {
                 if (!flavor2Id) return alert('Seleccioná el segundo sabor o "Solo Media"');
                 
-                // CASO: SOLO MEDIA PIZZA
                 if (flavor2Id === 'solo_media') {
                     finalPrice = item.priceH;
                     displayName = `1/2 ${item.name} (Solo Mitad)`;
-                } 
-                // CASO: 1/2 Y 1/2 NORMAL
-                else {
+                } else {
                     const item2 = menuData[currentCategory].find(i => i.id == flavor2Id);
                     finalPrice = Math.round((item.priceG + item2.priceG) / 2);
                     displayName = `1/2 ${item.name} - 1/2 ${item2.name}`;
@@ -265,7 +267,6 @@
             
             updateCart();
             
-            // Resetear selectores
             sizeSelect.value = 'full';
             document.getElementById(`flavor2-${id}`).style.display = 'none';
             document.getElementById(`flavor2-${id}`).value = '';
